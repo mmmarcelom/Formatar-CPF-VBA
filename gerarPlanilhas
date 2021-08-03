@@ -1,0 +1,115 @@
+Sub dividirDados()
+
+
+Dim origem As Worksheet
+Set origem = Worksheets("Herdeiros e Não Filiados")
+
+prilinha = 2
+ultlinha = origem.Cells(Rows.Count, 2).End(xlUp).Row
+
+For linha = prilinha To ultlinha
+    DoEvents
+    nome = origem.Cells(linha, 8)
+    If Not WorksheetExists(nome) Then
+        Sheets.Add(After:=origem).Name = nome
+        origem.Range("1:1").Copy Worksheets(nome).Range("1:1")
+    End If
+
+    origem.Range(linha & ":" & linha).Copy Worksheets(nome).Cells(Rows.Count, 1).End(xlUp).Offset(1, 0)
+Next linha
+
+End Sub
+
+Sub autoFit()
+
+For Each Sheet In Sheets
+    Sheet.Columns("A:O").EntireColumn.autoFit
+Next Sheet
+
+End Sub
+
+Sub gerarPlanilhas()
+
+Dim gerador As Workbook
+Set gerador = ActiveWorkbook
+
+Dim origem As Worksheet
+Set origem = Worksheets("Arquivos")
+
+prilinha = 2
+ultlinha = origem.Cells(Rows.Count, 1).End(xlUp).Row
+
+For linha = prilinha To ultlinha
+    nome = origem.Cells(linha, 1)
+    If WorksheetExists(nome) Then
+        Sheets(nome).Select
+        Sheets(nome).Copy
+        ActiveWorkbook.SaveAs Filename:=gerador.Path & "\" & nome & ".xlsx"
+        ActiveWindow.Close
+    End If
+    origem.Cells(linha, 2) = Now
+
+Next linha
+
+End Sub
+
+
+Function WorksheetExists(ByVal shtName As String, Optional wb As Workbook) As Boolean
+    Dim sht As Worksheet
+
+    If wb Is Nothing Then Set wb = ThisWorkbook
+
+    On Error Resume Next
+    Set sht = wb.Sheets(shtName)
+    On Error GoTo 0
+    WorksheetExists = Not sht Is Nothing
+
+End Function
+
+
+
+Sub DividiremPlanilhasDiferentes()
+
+Dim gerador As Workbook
+Set gerador = ActiveWorkbook
+
+Dim Arquivos, Dados, NaoFiliados, Herdeiros As Worksheet
+Set Arquivos = Worksheets("Arquivos")
+Set Dados = Worksheets("Dados")
+Set NaoFiliados = Worksheets("Não Filiados")
+Set Herdeiros = Worksheets("Herdeiros")
+
+nArquivoInicial = Arquivos.Cells(Rows.Count, 2).End(xlUp).Row + 1
+nArquivoFinal = Arquivos.Cells(Rows.Count, 1).End(xlUp).Row
+
+prilinha = 2
+ultlinha = Dados.Cells(Rows.Count, 2).End(xlUp).Row
+
+For nArquivo = nArquivoInicial To nArquivoFinal
+    nome = Arquivos.Cells(nArquivo, 1)
+    For linha = prilinha To ultlinha
+        DoEvents
+
+        If nome = Dados.Cells(linha, 8) Then
+
+            If Dados.Cells(linha, 5) = "Herdeiro" Then
+                Dados.Range(linha & ":" & linha).Copy Herdeiros.Cells(Rows.Count, 3).End(xlUp).Offset(1, 0).EntireRow
+            Else
+                Dados.Range(linha & ":" & linha).Copy NaoFiliados.Cells(Rows.Count, 3).End(xlUp).Offset(1, 0).EntireRow
+            End If
+        End If
+
+    Next linha
+
+    Sheets(Array("Não Filiados", "Herdeiros")).Copy
+
+    ActiveWorkbook.SaveAs Filename:=gerador.Path & "\" & nome & ".xlsx"
+    ActiveWindow.Close
+    Arquivos.Cells(nArquivo, 2) = Now
+
+    Herdeiros.Range("2:" & Herdeiros.Cells(Rows.Count, 3).End(xlUp).Row).Clear
+    NaoFiliados.Range("2:" & NaoFiliados.Cells(Rows.Count, 3).End(xlUp).Row).Clear
+
+Next nArquivo
+
+End Sub
