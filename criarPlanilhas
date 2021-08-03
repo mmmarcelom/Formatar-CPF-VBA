@@ -1,0 +1,70 @@
+Sub dividirEmAbas()
+    
+    Dim planilha As Worksheet
+    Set planilha = ActiveSheet
+    
+    Dim wb As Workbook
+    Set wb = ActiveWorkbook
+    
+    prilinha = 2
+    ultlinha = planilha.Cells(planilha.Rows.Count, 1).End(xlUp).Row
+    coluna = 3
+    
+    For linha = prilinha To ultlinha
+        nomeatual = planilha.Cells(linha, coluna)
+        If Not WorksheetExists(nomeatual, wb) Then
+            Sheets.Add(After:=Sheets(Sheets.Count)).Name = nomeatual
+            planilha.Range("A1").EntireRow.Copy Worksheets(nomeatual).Range("A1").EntireRow
+            planilha.Activate
+        End If
+        Set planilhaAtual = Worksheets(nomeatual)
+            
+        j = planilhaAtual.Cells(planilhaAtual.Rows.Count, 1).End(xlUp).Row + 1
+            
+        planilha.Range("A" & linha).EntireRow.Copy planilhaAtual.Cells(j, 1).EntireRow
+        
+    Next linha
+
+End Sub
+
+Sub criarPlanilhas()
+    Dim planilha As Workbook
+    Set planilha = ActiveWorkbook
+    
+    AbaOriginal = ActiveSheet.Name
+
+    Caminho = ActiveWorkbook.Path
+
+    For Each Sheet In Sheets
+        nome = Sheet.Name
+
+        If nome <> AbaOriginal Then
+            Sheet.Select
+            Sheet.Move
+            ActiveWorkbook.SaveAs Filename:=Caminho & "\" & nome & ".xlsx", FileFormat:=xlOpenXMLWorkbook
+            ActiveWorkbook.Close
+        End If
+        planilha.Activate
+    Next Sheet
+
+End Sub
+
+Function WorksheetExists(ByVal shtName As String, Optional wb As Workbook) As Boolean
+    Dim sht As Worksheet
+
+    If wb Is Nothing Then Set wb = ThisWorkbook
+
+    On Error Resume Next
+    Set sht = wb.Sheets(shtName)
+    On Error GoTo 0
+    WorksheetExists = Not sht Is Nothing
+
+End Function
+
+Sub autoFit()
+
+For Each Sheet In Sheets
+    Sheet.Columns("A:Z").EntireColumn.autoFit
+Next Sheet
+
+End Sub
