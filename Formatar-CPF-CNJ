@@ -1,0 +1,79 @@
+Sub FormatarCPF()
+
+    Dim arr As Variant
+    Dim CPF As String
+
+    arr = Selection
+
+    For i = LBound(arr) To UBound(arr)
+        arr(i, 1) = adicionarPontuacaoCPF(arr(i, 1))
+    Next i
+
+    Selection = arr
+
+End Sub
+
+Function adicionarPontuacaoCPF(ByVal texto As String) As String
+
+    For i = 1 To Len(texto)
+        If IsNumeric(Mid(texto, i, 1)) Then textoLimpo = textoLimpo & Mid(texto, i, 1)
+    Next i
+
+    If Len(textoLimpo) > 11 Then
+        adicionarPontuacaoCPF = texto
+        Exit Function
+    Else
+        Do While Len(textoLimpo) < 11
+            textoLimpo = "0" & textoLimpo
+        Loop
+
+        Trecho1 = Left(textoLimpo, 3)
+        Trecho2 = Mid(textoLimpo, 4, 3)
+        Trecho3 = Mid(textoLimpo, 7, 3)
+        Trecho4 = Right(textoLimpo, 2)
+
+        adicionarPontuacaoCPF = Trecho1 & "." & Trecho2 & "." & Trecho3 & "-" & Trecho4
+    End If
+
+End Function
+
+Sub FormatarProcesso()
+
+    Dim arr As Variant
+    Dim Processo As String
+
+    arr = Selection
+
+    For i = LBound(arr) To UBound(arr)
+        arr(i, 1) = adicionarPontuacaoProcesso(arr(i, 1))
+    Next i
+
+    Selection = arr
+
+End Sub
+
+Function adicionarPontuacaoProcesso(ByVal texto As String) As String
+
+    For i = 1 To Len(texto)
+        If IsNumeric(Mid(texto, i, 1)) Then textoLimpo = textoLimpo & Mid(texto, i, 1)
+    Next i
+
+    If Len(textoLimpo) > 20 Then
+        adicionarPontuacaoProcesso = texto
+        Exit Function
+    Else
+        Do While Len(textoLimpo) < 20
+            textoLimpo = "0" & textoLimpo
+        Loop
+
+        Trecho1 = Left(textoLimpo, 7)
+        Trecho2 = Mid(textoLimpo, 8, 2)
+        Trecho3 = Mid(textoLimpo, 10, 4)
+        Trecho4 = Mid(textoLimpo, 14, 1)
+        Trecho5 = Mid(textoLimpo, 15, 2)
+        Trecho6 = Right(textoLimpo, 4)
+
+        adicionarPontuacaoProcesso = Trecho1 & "-" & Trecho2 & "." & Trecho3 & "." & Trecho4 & "." & Trecho5 & "." & Trecho6
+    End If
+
+End Function
