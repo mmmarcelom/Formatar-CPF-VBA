@@ -4,7 +4,8 @@ Para utilizar basta adicionar o macro em sua pasta pessoas de macros.
 
 Selecione os CPFs que gostaria de converter e execute o macro.
 
-https://github.com/mmmarcelom/macrosExcel/blob/main/gifs/GIF_CPF.gif
+![MacroCPF](./macrosExcel/blob/main/gifs/GIF_CPF.gif)
+
 
 Você também pode utilizar a fórmula:
 
