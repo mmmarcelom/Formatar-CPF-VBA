@@ -1,0 +1,41 @@
+Sub FormatarCPF()
+
+    If Selection.Cells.Count = 1 Then
+        Selection = CPF(Selection)
+    Else
+        Dim arr As Variant
+        arr = Selection
+        
+        For i = LBound(arr) To UBound(arr)
+            arr(i, 1) = CPF(arr(i, 1))
+        Next i
+        
+        Selection = arr
+    
+    End If
+
+End Sub
+
+Function CPF(ByVal texto As String) As String
+
+    For i = 1 To Len(texto)
+        If IsNumeric(Mid(texto, i, 1)) Then textoLimpo = textoLimpo & Mid(texto, i, 1)
+    Next i
+
+    If Len(textoLimpo) > 11 Then
+        adicionarPontuacaoCPF = texto
+        Exit Function
+    Else
+        Do While Len(textoLimpo) < 11
+            textoLimpo = "0" & textoLimpo
+        Loop
+
+        Trecho1 = Left(textoLimpo, 3)
+        Trecho2 = Mid(textoLimpo, 4, 3)
+        Trecho3 = Mid(textoLimpo, 7, 3)
+        Trecho4 = Right(textoLimpo, 2)
+
+        CPF = Trecho1 & "." & Trecho2 & "." & Trecho3 & "-" & Trecho4
+    End If
+
+End Function
