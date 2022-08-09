@@ -1,0 +1,98 @@
+Public Function FormatarNPU(ByVal NPUoriginal As String) As String
+
+Dim npu As String '0002751-35.2003.4.05.8000
+Dim Numero As String '0002751
+Dim Digito As String '35
+Dim Ano As String '2003
+Dim Justica As String '4
+Dim Tribunal As String '05
+Dim Orgao As String '8000
+
+'Encontrei uma function na internet para remover os pontos, traços, espaços e etc...
+'Link: https://stackoverflow.com/questions/41882525/vba-how-to-remove-non-printable-characters-from-data
+    Dim dirtyString As String
+    Dim cleanString As String
+    Dim iPosition As Integer
+
+    dirtyString = NPUoriginal
+    cleanString = ""
+
+    For iPosition = 1 To Len(dirtyString)
+        Select Case Asc(Mid(dirtyString, iPosition, 1))
+            Case 9    ' Char(9)
+            Case 10   ' Char(10)
+            Case 13   ' Char(13)
+            Case 16   ' Char(16)
+            Case 32   ' Adaptei para remover espaços " "
+            Case 44   ' Adaptei para remover vírgulas ","
+            Case 45   ' Adaptei para remover traço "-"
+            Case 46   ' Adaptei para remover pontos "."
+            Case Else
+                cleanString = cleanString & Mid(dirtyString, iPosition, 1) ' Add character to clean field.
+        End Select
+    Next
+'Fim da function
+
+npu = cleanString
+
+'200380000062486
+Select Case Len(npu)
+
+    Case 15
+    
+    '=EXT.TEXTO(D5;1;4)
+    'EXT.TEXTO(D5;5;2)
+    'EXT.TEXTO(D5;7;2)
+    'EXT.TEXTO(D5;9;6)
+    '"-"&DIREITA(SUBSTITUIR(D5;" - P";"");1)
+    
+        Ano = Left(npu, 4)
+        Justica = Mid(npu, 5, 2)
+        Tribunal = Mid(npu, 7, 2)
+        Numero = Mid(npu, 9, 6)
+        Digito = Right(npu, 1)
+        
+        FormatarNPU = Ano & "." & Justica & "." & Tribunal & "." & Numero & "-" & Digito
+
+    Case 20
+        
+        'Dim NPU As String '0002751-35.2003.4.05.8000
+        'Dim Numero As String '0002751
+        'Dim Digito As String '35
+        'Dim Ano As String '2003
+        'Dim Justica As String '4
+        'Dim Tribunal As String '05
+        'Dim Orgao As String '8000
+        
+        Numero = Left(npu, 7)
+        Digito = Mid(npu, 8, 2)
+        Ano = Mid(npu, 10, 4)
+        Justica = Mid(npu, 14, 1)
+        Tribunal = Mid(npu, 15, 2)
+        Orgao = Right(npu, 4)
+        FormatarNPU = Numero & "-" & Digito & "." & Ano & "." & Justica & "." & Tribunal & "." & Orgao
+
+    Case Else
+    
+        FormatarNPU = "Verificar o nº de caracteres"
+    
+End Select
+
+End Function
+
+Sub npu()
+
+Dim Linha As Long
+Dim PriLinha As Long
+Dim UItLinha As Long
+
+PriLinha = Cells(Rows.Count, 7).End(xlUp).Row + 1
+UItLinha = Cells(Rows.Count, 8).End(xlUp).Row
+
+For Linha = PriLinha To UItLinha
+
+    Cells(Linha, 7) = FormatarNPU(Cells(Linha, 6))
+    
+Next Linha
+
+End Sub
